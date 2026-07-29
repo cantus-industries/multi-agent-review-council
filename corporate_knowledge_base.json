@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "description": "Flat context parameters seeded into the project knowledge state before a review. Values are strings so they round-trip through the ledger unchanged. Replace these with your own organization's parameters.",
+  "parameters": {
+    "engagement_model": "value-based, milestone-gated",
+    "billing_model": "flat fee per deployed workflow; no hourly billing",
+    "governance_pillar_1": "data governance - every input has a stated source and retention period",
+    "governance_pillar_2": "reliable multi-step reasoning - every conclusion is traceable to an input",
+    "governance_pillar_3": "security boundaries - no credential enters an agent-visible context",
+    "governance_pillar_4": "human accountability - a named owner signs off before production",
+    "review_gate": "no change reaches production without an evidenced approval",
+    "audit_retention_days": "365",
+    "escalation_path": "blocking finding -> named owner -> executive sponsor",
+    "naming_dictionary": "agent, council, reviewer, finding, verdict, ledger"
+  }
+}

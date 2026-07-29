@@ -1,0 +1,24 @@
+[project]
+name = "multi-agent-review-council"
+version = "0.1.0"
+description = "Parallel multi-agent consensus review with a fail-loud state ledger."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{ name = "Cantus Industries" }]
+keywords = ["multi-agent", "consensus", "review", "agents", "llm"]
+dependencies = []
+
+[project.optional-dependencies]
+claude = ["anthropic>=0.40"]
+gemini = ["google-genai>=1.0"]
+dev = ["pytest>=7.0"]
+
+[project.scripts]
+critic-council = "main:main"
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q --strict-markers"

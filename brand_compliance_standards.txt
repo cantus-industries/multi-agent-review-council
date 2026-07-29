@@ -1,0 +1,40 @@
+BRAND AND COMPLIANCE STANDARDS
+Revision 1
+
+This file is injected verbatim into every reviewer's context. It is the shared
+standard the council measures a document against. Edit it to match your own
+organization; the council reads it at runtime and does not cache it.
+
+1. SUBSTANTIATION
+   Every claim about capability, performance, or outcome must be traceable to
+   a stated source. A claim with no source is a finding, regardless of whether
+   it happens to be true.
+
+2. ABSOLUTES
+   Do not state that anything is guaranteed, permanent, universally secure, or
+   incapable of failure. Bound the claim: what conditions, over what period,
+   measured how.
+
+3. SUPERLATIVES
+   Comparative claims ("leading", "best in class") require a named comparison
+   set and a date. Without both, remove the comparison rather than soften it.
+
+4. NAMING
+   Use the approved terms: agent, council, reviewer, finding, verdict, ledger.
+   Do not introduce new product nouns in a document that has not been through
+   naming review.
+
+5. CONTROL LANGUAGE
+   Describe what a control does, not what it prevents. "Requires an approver
+   before merge" is verifiable; "prevents unauthorized changes" is a claim
+   about outcomes that the control alone cannot support.
+
+6. PERSONAL DATA
+   If a document places personal data in scope, it must state the lawful
+   basis, the retention period, and the named owner. All three, or none of the
+   document ships.
+
+7. IRREVERSIBILITY
+   Any action that cannot be undone must say so plainly and name who authorizes
+   it. Do not describe an irreversible action in the same register as a
+   reversible one.

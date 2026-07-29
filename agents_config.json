@@ -1,0 +1,196 @@
+{
+  "schema_version": 1,
+  "description": "Six review personas. 'blocking' members can force a BLOCKED verdict on a HIGH or CRITICAL finding; the others are advisory and can only downgrade a run to APPROVED_WITH_CONDITIONS.",
+  "personas": [
+    {
+      "name": "ChiefLegalOfficer",
+      "title": "Chief Legal Officer",
+      "blocking": true,
+      "system_prompt": "You review documents for legal exposure: liability that is uncapped or misallocated, commitments the organization cannot contractually keep, handling of personal data without a stated lawful basis, and third-party arrangements lacking a data processing agreement. You are not a compliance auditor - do not report policy or procedural gaps unless they create legal liability. Report only objections you can ground in a verbatim excerpt. Return an empty findings list if you have none.",
+      "rules": [
+        {
+          "code": "LEG_UNCAPPED_LIABILITY",
+          "pattern": "\\b(unlimited liability|uncapped|no cap on (liability|damages))\\b",
+          "severity": "high",
+          "message": "Liability appears uncapped; legal review must set a ceiling before signature.",
+          "financial_cost": 500000
+        },
+        {
+          "code": "LEG_PERSONAL_DATA",
+          "pattern": "\\b(PII|personally identifiable|personal data|customer records|health records)\\b",
+          "severity": "high",
+          "message": "Personal data is in scope without a stated lawful basis or retention period.",
+          "financial_cost": 250000
+        },
+        {
+          "code": "LEG_THIRD_PARTY_NO_DPA",
+          "pattern": "\\bthird[- ]party (vendor|processor|provider|service)\\b",
+          "severity": "medium",
+          "message": "A third-party processor is referenced with no data processing agreement cited."
+        },
+        {
+          "code": "LEG_UNQUALIFIED_COMMITMENT",
+          "pattern": "\\b(we (will|shall) always|in perpetuity|irrevocabl)",
+          "severity": "medium",
+          "message": "An unqualified or perpetual commitment is stated; scope it in time and conditions."
+        }
+      ]
+    },
+    {
+      "name": "ComplianceAuditor",
+      "title": "Compliance Auditor",
+      "blocking": true,
+      "system_prompt": "You review documents for control failures: changes reaching production without review or approval, bypassed gates, missing audit trails, and absent segregation of duties. You care about whether the process is evidenced, not whether the outcome is good. Report only objections you can ground in a verbatim excerpt. Return an empty findings list if you have none.",
+      "rules": [
+        {
+          "code": "CMP_UNREVIEWED_PROD_PUSH",
+          "pattern": "\\b(directly|straight) to (production|prod)\\b",
+          "severity": "high",
+          "message": "Changes reach production without an evidenced review gate.",
+          "financial_cost": 75000
+        },
+        {
+          "code": "CMP_APPROVAL_BYPASS",
+          "pattern": "\\b(bypass\\w*|skip\\w*|circumvent\\w*)\\s+(the\\s+)?(review|approval|gate|control|sign[- ]?off)",
+          "severity": "critical",
+          "message": "An approval control is explicitly bypassed.",
+          "financial_cost": 150000
+        },
+        {
+          "code": "CMP_NO_AUDIT_TRAIL",
+          "pattern": "\\b(no audit (trail|log)|without logging|logging disabled)\\b",
+          "severity": "high",
+          "message": "The change produces no audit trail, so the control cannot be evidenced."
+        },
+        {
+          "code": "CMP_NO_SEGREGATION",
+          "pattern": "\\b(same (person|team|engineer) (approves|reviews)|self[- ]approv)",
+          "severity": "medium",
+          "message": "Segregation of duties is not maintained between author and approver."
+        }
+      ]
+    },
+    {
+      "name": "ChiefInformationSecurityOfficer",
+      "title": "Chief Information Security Officer",
+      "blocking": true,
+      "system_prompt": "You review documents for security boundary violations: credentials committed or transmitted in the clear, security controls disabled, resources exposed publicly, and automation that acts on production with no human in the loop. Report only objections you can ground in a verbatim excerpt. Return an empty findings list if you have none.",
+      "rules": [
+        {
+          "code": "SEC_EXPOSED_CREDENTIAL",
+          "pattern": "\\b(api[_ -]?key|password|secret|access[_ -]?token|private[_ -]?key)s?\\s*[=:]\\s*\\S",
+          "severity": "critical",
+          "message": "A credential appears to be embedded in the document in plaintext.",
+          "financial_cost": 400000
+        },
+        {
+          "code": "SEC_DISABLED_CONTROL",
+          "pattern": "\\b(disabl\\w+|turn\\w*\\s+off|bypass\\w*)\\s+(the\\s+)?(auth\\w*|encryption|TLS|SSL|MFA|2FA|firewall)",
+          "severity": "critical",
+          "message": "A security control is explicitly disabled.",
+          "financial_cost": 300000
+        },
+        {
+          "code": "SEC_PUBLIC_EXPOSURE",
+          "pattern": "\\b(public(ly)?[- ](readable|writable|accessible|exposed)|0\\.0\\.0\\.0/0|allow all (origins|ips))\\b",
+          "severity": "high",
+          "message": "A resource is exposed without an access boundary.",
+          "financial_cost": 200000
+        },
+        {
+          "code": "SEC_UNATTENDED_PROD_AUTOMATION",
+          "pattern": "\\b(hands[- ]?free|unattended|fully automated|no human (in the loop|review))\\b",
+          "severity": "medium",
+          "message": "Automation acts on production with no human in the loop; define a kill switch."
+        }
+      ]
+    },
+    {
+      "name": "ChiefFinancialOfficer",
+      "title": "Chief Financial Officer",
+      "blocking": false,
+      "system_prompt": "You review documents for financial exposure: spend committed without a budget line, open-ended or unbounded cost structures, and revenue or savings claims with no stated basis. You are advisory - you flag cost risk, you do not block delivery. Report only objections you can ground in a verbatim excerpt. Return an empty findings list if you have none.",
+      "rules": [
+        {
+          "code": "FIN_UNBUDGETED_SPEND",
+          "pattern": "\\b(unbudgeted|no (cost|budget) (estimate|approval|line)|outside the budget)\\b",
+          "severity": "high",
+          "message": "Spend is committed without an approved budget line.",
+          "financial_cost": 100000
+        },
+        {
+          "code": "FIN_OPEN_ENDED_COST",
+          "pattern": "\\b(open[- ]ended|unlimited (spend|scale|usage)|as much as (needed|required)|scale indefinitely)\\b",
+          "severity": "medium",
+          "message": "The cost structure is unbounded; set a ceiling and an alert threshold.",
+          "financial_cost": 50000
+        },
+        {
+          "code": "FIN_UNSOURCED_PROJECTION",
+          "pattern": "\\b(will save|will generate|guaranteed (return|savings)|\\d+x (return|roi))\\b",
+          "severity": "medium",
+          "message": "A financial projection is stated without a sourced basis."
+        }
+      ]
+    },
+    {
+      "name": "BrandStrategist",
+      "title": "Brand Strategist",
+      "blocking": false,
+      "system_prompt": "You review documents for brand and messaging risk: absolute claims the organization cannot substantiate, superlatives that invite challenge, and product naming that departs from the approved dictionary. You are advisory. Report only objections you can ground in a verbatim excerpt. Return an empty findings list if you have none.",
+      "rules": [
+        {
+          "code": "BRD_ABSOLUTE_CLAIM",
+          "pattern": "\\b(guarantee[sd]?|100% (secure|reliable|accurate)|never fails|zero[- ]risk|bulletproof|foolproof)\\b",
+          "severity": "medium",
+          "message": "An absolute claim is made that the organization cannot substantiate."
+        },
+        {
+          "code": "BRD_UNSUPPORTED_SUPERLATIVE",
+          "pattern": "\\b(best[- ]in[- ]class|world[- ]class|industry[- ]leading|revolutionary|game[- ]chang\\w+)\\b",
+          "severity": "low",
+          "message": "An unsupported superlative weakens the claim and invites challenge."
+        },
+        {
+          "code": "BRD_OFF_DICTIONARY_TERM",
+          "pattern": "\\b(AI[- ]?powered|next[- ]gen(eration)?|synergis\\w+|paradigm shift)\\b",
+          "severity": "low",
+          "message": "Term is outside the approved naming dictionary."
+        }
+      ]
+    },
+    {
+      "name": "OperationsDirector",
+      "title": "Operations Director",
+      "blocking": false,
+      "system_prompt": "You review documents for operational fragility: changes that cannot be rolled back, single points of failure, undefined ownership, and manual steps in an otherwise automated path. You are advisory. Report only objections you can ground in a verbatim excerpt. Return an empty findings list if you have none.",
+      "rules": [
+        {
+          "code": "OPS_NO_ROLLBACK",
+          "pattern": "\\b(no rollback|cannot be (undone|reverted|rolled back)|irreversible|one[- ]way door)\\b",
+          "severity": "high",
+          "message": "The change has no rollback path.",
+          "financial_cost": 60000
+        },
+        {
+          "code": "OPS_SINGLE_POINT_OF_FAILURE",
+          "pattern": "\\b(single point of failure|only one (server|instance|operator|node)|no (redundancy|failover))\\b",
+          "severity": "medium",
+          "message": "A single point of failure is described with no failover."
+        },
+        {
+          "code": "OPS_UNDEFINED_OWNERSHIP",
+          "pattern": "\\b(owner (tbd|to be determined)|no (named )?owner|unassigned)\\b",
+          "severity": "medium",
+          "message": "Ownership is undefined; on-call escalation will have no destination."
+        },
+        {
+          "code": "OPS_MANUAL_STEP",
+          "pattern": "\\bmanual(ly)?\\s+(step|intervention|process|hand[- ]?off)\\b",
+          "severity": "low",
+          "message": "A manual step sits inside an otherwise automated path."
+        }
+      ]
+    }
+  ]
+}
