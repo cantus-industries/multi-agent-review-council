@@ -118,6 +118,7 @@ Every regex is compiled at load time, so a malformed pattern fails immediately w
 
 Stated plainly, because they matter if you are evaluating this:
 
+- **The persona system prompts here are short illustrative stubs.** The tuned production prompts and finding rubrics are proprietary and are omitted from this public reference. The offline rules backend, which the test suite exercises, does not depend on them.
 - **The regex backend is a demonstration, not a compliance control.** It matches surface patterns. Real control coverage needs the LLM backends and a rubric you have validated against your own corpus.
 - **A timed-out reviewer's thread is abandoned, not killed.** Python cannot kill a thread. The council stops waiting and records the timeout, but the worker runs to completion in the background. For hard resource bounds, run reviewers as separate processes.
 - **The financial figures are illustrative.** `financial_cost` on each rule is a placeholder for whatever exposure model you actually use.
